@@ -3,6 +3,6 @@
     "content_in_root": true,
     "iot_class": "Cloud Polling",
     "domains": [
-      "light"
+      "light", "switch", "binary_sensor"
     ]
   }

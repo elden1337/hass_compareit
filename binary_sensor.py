@@ -11,35 +11,81 @@ from .const import DOMAIN, DOMAIN_DATA, SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
+BINARYSENSOR_TYPE = {
+  "Hemma/Borta": "presence",
+  "Vattenläckagedetektor": "moisture",
+  "Brandlarm": "smoke",
+  "Inbrottslarm": "safety"
+}
+
 def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
 ) -> None:
 
-    hub = hass.data[DOMAIN_DATA]["hub"]
-    outputs = json.loads(hub.GetAllEntities())
-
-    entity = {
+    hub = hass.data[DOMAIN]["hub"]
+    result = json.loads(hub.GetAllEntities())
+    
+    homeaway = {
     "home_uuid": '',
     "away_uuid": '',
     "init_value": True
     }
-
-    for switch in outputs["outputs"]:
-        if switch["name"].startswith("OUT"):
-            if switch["name"].endswith("HOME"):
-                entity["home_uuid"] = switch["uuid"]
-                entity["init_value"] = switch["value"]
-            else:
-                entity["away_uuid"] = switch["uuid"]     
-
+    
     entities = []
-    entities.append(entity)
 
+    for switch in result["inputs"]:
+        if switch["name"].endswith("HOME"):
+            homeaway["home_uuid"] = switch["uuid"]
+            homeaway["init_value"] = switch["value"]
+        elif switch["name"].endswith("AWAY"):
+            homeaway["away_uuid"] = switch["uuid"] 
+        elif switch["name"] == "Brandlarm" or switch["name"] == "Inbrottslarm" or switch["name"] == "Vattenläckagedetektor":
+            entities.append(switch)           
+
+    homeaways = []
+    homeaways.append(homeaway)
+
+    add_entities(CompareItHomeAwayBinarySensor(entity, hub) for entity in homeaways)
     add_entities(CompareItBinarySensor(entity, hub) for entity in entities)
+
 
 class CompareItBinarySensor(BinarySensorEntity):  
     def __init__(self, switch, hub) -> None:
         """Initialize a Compareit Binary sensor."""
+
+        self._switch = switch
+        self._name = switch["name"]
+        self._uuid = switch["uuid"]
+        self._state = "on" if switch["value"] == True else "off"
+        self.hub = hub
+
+    @property
+    def unique_id(self):
+        return f"compareit_{self._uuid}"
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def is_on(self) -> bool | None:
+        return True if self._state == "on" else False
+
+    @property
+    def device_class(self):
+        return BINARYSENSOR_TYPE[self._name]
+
+    def update(self) -> None:
+        newstate = json.loads(self.hub.GetEntity(self._uuid))
+        if newstate["value"] == True:
+            self._state = "on"
+        elif newstate["value"] == False:
+            self._state = "off"
+
+
+class CompareItHomeAwayBinarySensor(BinarySensorEntity):  
+    def __init__(self, switch, hub) -> None:
+        """Initialize a Compareit Binary sensor with dual uuids."""
 
         self._switch = switch
         self._name = "Hemma/Borta"
@@ -62,7 +108,7 @@ class CompareItBinarySensor(BinarySensorEntity):
 
     @property
     def device_class(self):
-        return "presence"
+        return BINARYSENSOR_TYPE[self._name]
 
     def update(self) -> None:
         homestate = json.loads(self.hub.GetEntity(self._uuid_home))

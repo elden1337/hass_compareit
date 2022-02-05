@@ -16,32 +16,17 @@ from .const import (
     DOMAIN_DATA
     )
 
-from homeassistant.const import (
-    CONF_PASSWORD,
-    CONF_USERNAME,
-)
-
-CONFIG_SCHEMA = vol.Schema(
-    {
-        DOMAIN: vol.Schema(
-            {
-                vol.Required(CONF_USERNAME): cv.string,
-                vol.Required(CONF_PASSWORD): cv.string,
-            }
-        )
-    },
-    extra=vol.ALLOW_EXTRA,
-)
-
-async def async_setup(hass: HomeAssistant, config: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:   
     """Set up Compare It"""
-    username = config[DOMAIN].get(CONF_USERNAME)
-    password = config[DOMAIN].get(CONF_PASSWORD)
-    hass.data[DOMAIN_DATA] = {}
 
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN][config.entry_id] = config.data
+    
+    username = config.data["username"]
+    password = config.data["password"]
     hub = CompareIt(username, password)
 
-    hass.data[DOMAIN_DATA]["hub"] = hub
+    hass.data[DOMAIN]["hub"] = hub
     
     for domain in PLATFORMS:
         hass.async_create_task(

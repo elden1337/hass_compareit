@@ -1,7 +1,7 @@
 {
     "domain": "compareit",
     "name": "Compare It Homeline",
-    "config_flow": false,
+    "config_flow": true,
     "documentation": "https://github.com/elden1337/hass_compareit",
     "issue_tracker": "https://github.com/elden1337/hass_compareit/issues",
     "requirements": [
@@ -10,6 +10,6 @@
     "codeowners": [
       "@elden1337"
     ],
-    "version": "1.0.0",
+    "version": "1.1.0",
     "iot_class": "cloud_polling"
   }

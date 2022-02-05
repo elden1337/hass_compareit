@@ -15,7 +15,7 @@ def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
 ) -> None:
 
-    hub = hass.data[DOMAIN_DATA]["hub"]
+    hub = hass.data[DOMAIN]["hub"]
     outputs = json.loads(hub.GetAllEntities())
 
     staticlights = []

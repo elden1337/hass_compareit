@@ -1,0 +1,20 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "This integration has already been configured"
+        },
+        "error": {
+            "cannot_connect": "Cannot connect to Compare It",
+            "invalid_auth": "Invalid authentication",
+            "unknown": "Unknown error has occured"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "Password",
+                    "username": "Username"
+                }
+            }
+        }
+   }
+}
