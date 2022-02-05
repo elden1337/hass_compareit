@@ -15,16 +15,16 @@ def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
 ) -> None:
 
-    hub = hass.data[DOMAIN_DATA]["hub"]
+    hub = hass.data[DOMAIN]["hub"]
     outputs = json.loads(hub.GetAllEntities())
 
     others = []
 
     for switch in outputs["outputs"]:
-        if switch["name"].startswith("Styrda"):
+        if switch["name"].startswith("Styrda") or switch["name"].startswith("Vattenav"):
             others.append(switch)
 
-    add_entities(CompareItSwitch(switch, hub) for o in others)
+    add_entities(CompareItSwitch(o, hub) for o in others)
 
 class CompareItSwitch(SwitchEntity):  
     def __init__(self, switch, hub) -> None:
