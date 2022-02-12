@@ -7,12 +7,7 @@ See https://www.compare-it.se/ for more information on the product.
 
 Copy this folder to `<config_dir>/custom_components/compareit/`.
 
-Add the following entry in your `configuration.yaml`:
+Setup the integration via integrations. Search for Compare It HomeLine.
+Required parameters are username and password.
 
-```yaml
-compareit:
-    username: youruser@domain.com 
-    password: yourAweSOMEPasswOrd!
-```
-
-As of version 0.1 Lights should work. Switches and services will come later.
+As of version 1.1 Lights, Switches and binary sensors work.
