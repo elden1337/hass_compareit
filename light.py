@@ -34,19 +34,13 @@ def setup_platform(
 class CompareItStaticLight(LightEntity):
     def __init__(self, light, hub) -> None:
         """Initialize a static CompareitLight."""
-        self._light = light
-        self._name = light["name"]
+        self._light = light    
         self._uuid = light["uuid"]
+        self._attr_name = light["name"]
+        self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
+
         self._state = "on" if light["value"] == True else "off"
         self.hub = hub
-
-    @property
-    def unique_id(self):
-        return f"compareit_{self._uuid}"
-
-    @property
-    def name(self) -> str:
-        return self._name
 
     @property
     def is_on(self) -> bool | None:
@@ -71,19 +65,13 @@ class CompareItDimmableLight(LightEntity):
     def __init__(self, light, hub) -> None:
         """Initialize a dimmable CompareitLight."""
         self._light = light
-        self._name = light["name"]
         self._uuid = light["uuid"]
+        self._attr_name = light["name"]
+        self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
+
         self._state = "on" if light["value"] > 0 else "off"
         self._brightness = round(light["value"] * 2.55) if light["value"] > 0 else 0
         self.hub = hub
-
-    @property
-    def unique_id(self):
-        return f"compareit_{self._uuid}"
-
-    @property
-    def name(self) -> str:
-        return self._name
 
     @property
     def brightness(self):

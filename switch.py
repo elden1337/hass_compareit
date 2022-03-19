@@ -31,18 +31,11 @@ class CompareItSwitch(SwitchEntity):
         """Initialize a CompareitSwitch."""
 
         self._switch = switch
-        self._name = switch["name"]
         self._uuid = switch["uuid"]
+        self._attr_name = switch["name"]
+        self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
         self._state = "on" if switch["value"] == True else "off"
         self.hub = hub
-
-    @property
-    def unique_id(self):
-        return f"compareit_{self._uuid}"
-
-    @property
-    def name(self) -> str:
-        return self._name
 
     @property
     def is_on(self) -> bool | None:
