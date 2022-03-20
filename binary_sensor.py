@@ -60,6 +60,9 @@ class CompareItBinarySensor(BinarySensorEntity):
         self._state = "on" if switch["value"] == True else "off"
         self.hub = hub
 
+    @property
+    def name(self) -> str:
+        return self._attr_name
 
     @property
     def is_on(self) -> bool | None:
@@ -67,7 +70,7 @@ class CompareItBinarySensor(BinarySensorEntity):
 
     @property
     def device_class(self):
-        return BINARYSENSOR_TYPE[self._name]
+        return BINARYSENSOR_TYPE[self.name]
 
     def update(self) -> None:
         newstate = json.loads(self.hub.GetEntity(self._uuid))
@@ -82,7 +85,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
         """Initialize a Compareit Binary sensor with dual uuids."""
 
         self._switch = switch
-        self._name = "Hemma/Borta"
+        self._attr_name = "Hemma/Borta"
         self._uuid_home = switch["home_uuid"]
         self._uuid_away = switch["away_uuid"]
         self._state = "on" if switch["init_value"] == True else "off"
@@ -94,7 +97,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
 
     @property
     def name(self) -> str:
-        return self._name
+        return self._attr_name
 
     @property
     def is_on(self) -> bool | None:
@@ -102,7 +105,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
 
     @property
     def device_class(self):
-        return BINARYSENSOR_TYPE[self._name]
+        return BINARYSENSOR_TYPE[self._attr_name]
 
     def update(self) -> None:
         homestate = json.loads(self.hub.GetEntity(self._uuid_home))
