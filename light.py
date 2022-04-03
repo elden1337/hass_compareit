@@ -6,10 +6,12 @@ import voluptuous as vol
 from homeassistant.components.light import (ATTR_BRIGHTNESS, LightEntity)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from datetime import timedelta
 
-from .const import DOMAIN, DOMAIN_DATA, SCAN_INTERVAL
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+SCAN_INTERVAL = timedelta(seconds=10)
 
 def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None

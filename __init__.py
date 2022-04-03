@@ -11,9 +11,7 @@ from homeassistant.helpers import discovery
 
 from .const import (
     DOMAIN,
-    SCAN_INTERVAL, 
     PLATFORMS,
-    DOMAIN_DATA
     )
 
 async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:   
