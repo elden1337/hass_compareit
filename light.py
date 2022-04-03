@@ -35,8 +35,7 @@ def setup_platform(
 
 class CompareItStaticLight(LightEntity):
     def __init__(self, light, hub) -> None:
-        """Initialize a static CompareitLight."""
-        self._light = light    
+        """Initialize a static CompareitLight."""    
         self._uuid = light["uuid"]
         self._attr_name = light["name"]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
@@ -48,11 +47,11 @@ class CompareItStaticLight(LightEntity):
     def is_on(self) -> bool | None:
         return True if self._state == "on" else False
 
-    def turn_on(self, **kwargs: Any) -> None:
+    def turn_on(self) -> None:
         self.hub.SetEntity(self._uuid, True)
         self.update()
 
-    def turn_off(self, **kwargs: Any) -> None:
+    def turn_off(self) -> None:
         self.hub.SetEntity(self._uuid, False)
         self.update()
 

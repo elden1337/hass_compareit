@@ -9,5 +9,3 @@ Copy this folder to `<config_dir>/custom_components/compareit/`.
 
 Setup the integration via integrations. Search for Compare It HomeLine.
 Required parameters are username and password.
-
-As of version 1.1 Lights, Switches and binary sensors work.
