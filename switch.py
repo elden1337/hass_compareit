@@ -6,10 +6,12 @@ import voluptuous as vol
 from homeassistant.components.switch import (SwitchEntity)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
-from .const import DOMAIN, DOMAIN_DATA, SCAN_INTERVAL
+from datetime import timedelta
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+SCAN_INTERVAL = timedelta(seconds=30)
 
 def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
@@ -30,7 +32,6 @@ class CompareItSwitch(SwitchEntity):
     def __init__(self, switch, hub) -> None:
         """Initialize a CompareitSwitch."""
 
-        self._switch = switch
         self._uuid = switch["uuid"]
         self._attr_name = switch["name"]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
@@ -47,15 +48,15 @@ class CompareItSwitch(SwitchEntity):
         else:
             self.turn_on()
 
-    def turn_on(self, **kwargs: Any) -> None:
+    def turn_on(self):
         self.hub.SetEntity(self._uuid, True)
         self.update()
 
-    def turn_off(self, **kwargs: Any) -> None:
+    def turn_off(self):
         self.hub.SetEntity(self._uuid, False)
         self.update()
 
-    def update(self) -> None:
+    def update(self):
         newstate = json.loads(self.hub.GetEntity(self._uuid))
         if newstate["value"] == True:
             self._state = "on"

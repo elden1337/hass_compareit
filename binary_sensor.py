@@ -6,8 +6,8 @@ import voluptuous as vol
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
-from .const import DOMAIN, DOMAIN_DATA, SCAN_INTERVAL
+from datetime import timedelta
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,6 +17,8 @@ BINARYSENSOR_TYPE = {
   "Brandlarm": "smoke",
   "Inbrottslarm": "safety"
 }
+
+SCAN_INTERVAL = timedelta(seconds=60)
 
 def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
