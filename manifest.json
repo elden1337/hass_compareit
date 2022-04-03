@@ -5,7 +5,7 @@
     "documentation": "https://github.com/elden1337/hass_compareit",
     "issue_tracker": "https://github.com/elden1337/hass_compareit/issues",
     "requirements": [
-      "homeline==0.0.3"
+      "homeline==0.0.4"
     ],
     "codeowners": [
       "@elden1337"
