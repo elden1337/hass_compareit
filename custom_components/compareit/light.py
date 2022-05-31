@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 import json
-import voluptuous as vol
+from typing import Any
 
 from homeassistant.components.light import (ATTR_BRIGHTNESS, LightEntity)
 from homeassistant.core import HomeAssistant
@@ -90,7 +90,7 @@ class CompareItDimmableLight(LightEntity):
         self.hub.SetEntity(self._uuid, round(self._brightness/2.55))
         self.update()
 
-    def turn_off(self, **kwargs: Any) -> None:
+    def turn_off(self) -> None:
         self.hub.SetEntity(self._uuid, 0)
         self._brightness = 0
         self.update()
