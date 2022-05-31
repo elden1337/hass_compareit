@@ -11,12 +11,10 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-SCAN_INTERVAL = timedelta(seconds=20)
-
-async def async_setup_entry(hass: HomeAssistant, config, async_add_entities: AddEntitiesCallback) -> None:
+def setup_platform(hass: HomeAssistant, config, add_entities: AddEntitiesCallback) -> None:
 
     hub = hass.data[DOMAIN]["hub"]
-    outputs = await json.loads(hub.GetAllEntities())
+    outputs = json.loads(hub.GetAllEntities())
 
     others = []
 
@@ -24,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, config, async_add_entities: Add
         if switch["name"].startswith("Styrda") or switch["name"].startswith("Vattenav"):
             others.append(switch)
     _LOGGER.info("compareit setting up switches")
-    async_add_entities(CompareItSwitch(o, hub) for o in others)
+    add_entities(CompareItSwitch(o, hub) for o in others)
 
 class CompareItSwitch(SwitchEntity):  
     def __init__(self, switch, hub) -> None:
@@ -49,16 +47,14 @@ class CompareItSwitch(SwitchEntity):
     def is_on(self) -> bool:
         return True if self._state == "on" else False
 
-    async def async_turn_on(self):
-        await self.hub.SetEntity(self._uuid, True)
-        self.async_write_ha_state()
+    def turn_on(self):
+        self.hub.SetEntity(self._uuid, True)
 
-    async def async_turn_off(self):
-        await self.hub.SetEntity(self._uuid, False)
-        self.async_write_ha_state()
+    def turn_off(self):
+        self.hub.SetEntity(self._uuid, False)
 
-    async def async_update(self):
-        newstate = await json.loads(self.hub.GetEntity(self._uuid))
+    def update(self):
+        newstate = json.loads(self.hub.GetEntity(self._uuid))
         if newstate["value"] == True:
             self.state = "on"
         elif newstate["value"] == False:

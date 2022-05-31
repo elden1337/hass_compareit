@@ -18,8 +18,6 @@ BINARYSENSOR_TYPE = {
   "Inbrottslarm": "safety"
 }
 
-SCAN_INTERVAL = timedelta(seconds=60)
-
 def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
 ) -> None:

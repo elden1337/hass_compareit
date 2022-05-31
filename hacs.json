@@ -1,8 +1,8 @@
 {
-    "name": "Compare IT Homeline",
-    "content_in_root": true,
-    "iot_class": "Cloud Polling",
-    "domains": [
-      "light", "switch", "binary_sensor"
-    ]
-  }
+  "name": "Compare-it",
+  "homeassistant": "2022.4.5",
+  "country": ["SE"],
+  "zip_release": true,
+  "filename": "compareit.zip",
+  "render_readme": true
+}
