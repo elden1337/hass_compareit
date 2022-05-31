@@ -1,6 +1,6 @@
 ![Validate with hassfest](https://github.com/elden1337/hass_compareit/workflows/Validate%20with%20hassfest/badge.svg) 
-[![Peaq_downloads](https://img.shields.io/github/downloads/elden1337/hass_compareit/total)](https://github.com/elden1337/hass_compareit) 
-[![hass-peaq_downloads](https://img.shields.io/github/downloads/elden1337/hass_compareit/latest/total)](https://github.com/elden1337/hass_compareit)
+[![hass_compareit_downloads](https://img.shields.io/github/downloads/elden1337/hass_compareit/total)](https://github.com/elden1337/hass_compareit) 
+[![hass_compareit_downloads](https://img.shields.io/github/downloads/elden1337/hass_compareit/latest/total)](https://github.com/elden1337/hass_compareit)
 [![Buy me a coffee](https://img.shields.io/static/v1.svg?label=Buy%20me%20a%20coffee&message=🥨&color=black&logo=buy%20me%20a%20coffee&logoColor=white&labelColor=6f4e37)](https://www.buymeacoffee.com/elden)
 
 # Compare IT Homeline
