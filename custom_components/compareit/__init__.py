@@ -1,7 +1,7 @@
 """The Compare IT integration."""
 from __future__ import annotations
 from datetime import timedelta
-from Compare_It import CompareIt
+
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
@@ -13,19 +13,28 @@ from .const import (
     DOMAIN,
     PLATFORMS,
     )
+from .hub import Hub
 
-async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:   
+
+async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
     """Set up Compare It"""
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][config.entry_id] = config.data
-    
-    username = config.data["username"]
-    password = config.data["password"]
-    hub = CompareIt(username, password)
+
+    hub = Hub(config.data["username"], config.data["password"])
 
     hass.data[DOMAIN]["hub"] = hub
-    
+
+    async def servicehandler_set_smarthome_mode(call): # pylint:disable=unused-argument
+        await hub.call_set_smarthome_mode()
+
+    async def servicehandler_activate_scenario(call): # pylint:disable=unused-argument
+        await hub.call_activate_scenario()
+
+    hass.services.async_register(DOMAIN, "set_smarthome_mode", servicehandler_set_smarthome_mode)
+    hass.services.async_register(DOMAIN, "activate_scenario", servicehandler_activate_scenario)
+
     for domain in PLATFORMS:
         hass.async_create_task(
             discovery.async_load_platform(hass, domain, DOMAIN, {}, config)

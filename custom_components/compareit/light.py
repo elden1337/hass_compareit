@@ -12,6 +12,8 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+SCAN_INTERVAL = timedelta(seconds=5)
+
 def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
 ) -> None:
@@ -61,6 +63,10 @@ class CompareItStaticLight(LightEntity):
         elif newstate["value"] == False:
             self._state = "off"
 
+    @property
+    def device_info(self):
+        return {"identifiers": {(DOMAIN, self._hub.hub_id)}}
+
 class CompareItDimmableLight(LightEntity):  
     def __init__(self, light, hub) -> None:
         """Initialize a dimmable CompareitLight."""
@@ -103,3 +109,7 @@ class CompareItDimmableLight(LightEntity):
             self._state = "off"
 
         self._brightness =  round(newstate["value"] * 2.55)
+
+    @property
+    def device_info(self):
+        return {"identifiers": {(DOMAIN, self._hub.hub_id)}}

@@ -11,6 +11,8 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+SCAN_INTERVAL = timedelta(seconds=5)
+
 def setup_platform(hass: HomeAssistant, config, add_entities: AddEntitiesCallback) -> None:
 
     hub = hass.data[DOMAIN]["hub"]
@@ -59,3 +61,7 @@ class CompareItSwitch(SwitchEntity):
             self.state = "on"
         elif newstate["value"] == False:
             self.state = "off"
+
+    @property
+    def device_info(self):
+        return {"identifiers": {(DOMAIN, self._hub.hub_id)}}

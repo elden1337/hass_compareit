@@ -18,6 +18,8 @@ BINARYSENSOR_TYPE = {
   "Inbrottslarm": "safety"
 }
 
+SCAN_INTERVAL = timedelta(seconds=5)
+
 def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
 ) -> None:
@@ -79,6 +81,10 @@ class CompareItBinarySensor(BinarySensorEntity):
         elif newstate["value"] == False:
             self._state = "off"
 
+    @property
+    def device_info(self):
+        return {"identifiers": {(DOMAIN, self._hub.hub_id)}}
+
 
 class CompareItHomeAwayBinarySensor(BinarySensorEntity):  
     def __init__(self, switch, hub) -> None:
@@ -114,3 +120,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
             self._state = "on"
         elif awaystate["value"] == True:
             self._state = "off"
+
+    @property
+    def device_info(self):
+        return {"identifiers": {(DOMAIN, self._hub.hub_id)}}
