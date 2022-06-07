@@ -3,8 +3,12 @@ from dataclasses import dataclass
 @dataclass
 class DTO_base:
     uuid: str
-    type: int
     name: str
+
+
+@dataclass
+class outputDTO(DTO_base):
+    type: int
     value: any
     online: bool
     systemtype: int
@@ -16,21 +20,14 @@ class DTO_base:
 
 
 @dataclass
-class outputDTO(DTO_base):
-    pass
-
-
-@dataclass
-class inputDTO(DTO_base):
+class inputDTO(outputDTO):
     forcetoggle: bool
     priority: int
     turnon: bool
 
 
 @dataclass
-class scenarioDTO:
-    uuid: str
-    name: str
+class scenarioDTO(DTO_base):
     dimmerspeed: int
     private: int
     order: int
@@ -40,9 +37,7 @@ class scenarioDTO:
 
 
 @dataclass
-class groupDTO:
-    uuid: str
-    name: str
+class groupDTO(DTO_base):
     order: int
     color: int
     private: int
