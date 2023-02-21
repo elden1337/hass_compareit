@@ -22,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][config.entry_id] = config.data
 
-    hub = Hub(config.data["username"], config.data["password"])
+    hub = Hub(config.data["username"], config.data["password"], hass=hass)
 
     hass.data[DOMAIN]["hub"] = hub
 

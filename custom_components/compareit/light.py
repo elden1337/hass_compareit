@@ -14,12 +14,12 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=5)
 
-def setup_platform(
+async def setup_platform(
    hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
 ) -> None:
 
     hub = hass.data[DOMAIN]["hub"]
-    outputs = json.loads(hub.GetAllEntities())
+    outputs = json.loads(await hub.GetAllEntities())
 
     staticlights = []
     dimmablelights = []

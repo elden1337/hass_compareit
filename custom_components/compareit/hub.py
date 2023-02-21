@@ -1,6 +1,7 @@
 import logging
 from Compare_It import CompareIt
 import json
+from homeassistant.core import HomeAssistant
 
 from custom_components.compareit.models.dtos import outputDTO, inputDTO, scenarioDTO, groupDTO
 
@@ -8,7 +9,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Hub:
-    def __init__(self, username, password):
+    def __init__(self, username: str, password: str, hass: HomeAssistant):
+        self._hass = hass
         self.outputs = {}
         self.inputs = {}
         self.scenarios = {}
@@ -17,14 +19,25 @@ class Hub:
         self._api = CompareIt(username, password)
         self.set_lists()
 
-    def get_optional(self, allkeys: dict, name: str, defaultval: any):
+    def _get_optional(self, allkeys: dict, name: str, defaultval: any):
         if name in allkeys.keys():
             return allkeys[name]
         else:
             return defaultval
 
-    def set_lists(self):
-        all = json.loads(self._api.GetAllEntities())
+
+    async def GetEntity(self, uuid):
+        return self._hass.async_add_executor_job(self._api.GetEntity(uuid))
+
+    async def SetEntity(self, uuid, value):
+        return self._hass.async_add_executor_job(self._api.SetEntity(uuid, value))
+
+    async def GetAllEntities(self):
+        return self._hass.async_add_executor_job(self._api.GetAllEntities())
+
+    async def set_lists(self):
+        all = await self._hass.async_add_executor_job(self._api.GetAllEntities())
+        all_json = json.loads(all)
 
         for o in all["outputs"]:
             self.outputs[o["uuid"]] = outputDTO(
@@ -42,10 +55,10 @@ class Hub:
             )
 
         for i in all["inputs"]:
-            _target = self.get_optional(i, "target", "")
-            _forcetoggle = self.get_optional(i, "forcetoggle", False)
-            _priority = self.get_optional(i, "priority", -1)
-            _turnon = self.get_optional(i, "turnon", False)
+            _target = self._get_optional(i, "target", "")
+            _forcetoggle = self._get_optional(i, "forcetoggle", False)
+            _priority = self._get_optional(i, "priority", -1)
+            _turnon = self._get_optional(i, "turnon", False)
 
             self.inputs[i["uuid"]] = inputDTO(
                 type=i["type"],
@@ -89,8 +102,8 @@ class Hub:
 
     _states_dict = {}
 
-    def get_entities(self):
-        result = self._api.GetAllEntities()
+    async def get_entities(self):
+        result = await self._hass.async_add_executor_job(self._api.GetAllEntities())
 
     async def call_set_smarthome_mode(self):
         pass
