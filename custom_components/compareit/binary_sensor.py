@@ -75,11 +75,15 @@ class CompareItBinarySensor(BinarySensorEntity):
         return BINARYSENSOR_TYPE[self.name]
 
     def update(self) -> None:
-        newstate = json.loads(self.hub.GetEntity(self._uuid))
-        if newstate["value"] == True:
-            self._state = "on"
-        elif newstate["value"] == False:
-            self._state = "off"
+        try:
+            newstate = json.loads(self.hub.GetEntity(self._uuid))
+            if newstate["value"]:
+                self._state = "on"
+            elif not newstate["value"]:
+                self._state = "off"
+        except:
+            _LOGGER.warning(f"Unable to update {self.name}")
+
 
     @property
     def device_info(self):
@@ -114,12 +118,15 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
         return BINARYSENSOR_TYPE[self._attr_name]
 
     def update(self) -> None:
-        homestate = json.loads(self.hub.GetEntity(self._uuid_home))
-        awaystate = json.loads(self.hub.GetEntity(self._uuid_away))
-        if homestate["value"] == True:
-            self._state = "on"
-        elif awaystate["value"] == True:
-            self._state = "off"
+        try:
+            homestate = json.loads(self.hub.GetEntity(self._uuid_home))
+            awaystate = json.loads(self.hub.GetEntity(self._uuid_away))
+            if homestate["value"]:
+                self._state = "on"
+            elif awaystate["value"]:
+                self._state = "off"
+        except:
+            _LOGGER.warning(f"Unable to update {self.name}")
 
     @property
     def device_info(self):

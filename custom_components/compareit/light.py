@@ -57,11 +57,14 @@ class CompareItStaticLight(LightEntity):
         self.update()
 
     def update(self) -> None:
-        newstate = json.loads(self.hub.GetEntity(self._uuid))
-        if newstate["value"] == True:
-            self._state = "on"
-        elif newstate["value"] == False:
-            self._state = "off"
+        try:
+            newstate = json.loads(self.hub.GetEntity(self._uuid))
+            if newstate["value"] == True:
+                self._state = "on"
+            elif newstate["value"] == False:
+                self._state = "off"
+        except:
+            _LOGGER.warning(f"Unable to update {self._attr_name}")
 
     @property
     def device_info(self):
@@ -102,13 +105,16 @@ class CompareItDimmableLight(LightEntity):
         self.update()
 
     def update(self) -> None:
-        newstate = json.loads(self.hub.GetEntity(self._uuid))
-        if newstate["value"] > 0:
-            self._state = "on"
-        elif newstate["value"] == 0:
-            self._state = "off"
+        try:
+            newstate = json.loads(self.hub.GetEntity(self._uuid))
+            if newstate["value"] > 0:
+                self._state = "on"
+            elif newstate["value"] == 0:
+                self._state = "off"
 
-        self._brightness =  round(newstate["value"] * 2.55)
+            self._brightness =  round(newstate["value"] * 2.55)
+        except:
+            _LOGGER.warning(f"Unable to update {self._attr_name}")
 
     @property
     def device_info(self):

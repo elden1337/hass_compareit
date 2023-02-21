@@ -47,7 +47,7 @@ class CompareItSwitch(SwitchEntity):
 
     @property
     def is_on(self) -> bool:
-        return True if self._state == "on" else False
+        return self._state == "on"
 
     def turn_on(self):
         self.hub.SetEntity(self._uuid, True)
@@ -56,11 +56,14 @@ class CompareItSwitch(SwitchEntity):
         self.hub.SetEntity(self._uuid, False)
 
     def update(self):
-        newstate = json.loads(self.hub.GetEntity(self._uuid))
-        if newstate["value"] == True:
-            self.state = "on"
-        elif newstate["value"] == False:
-            self.state = "off"
+        try:
+            newstate = json.loads(self.hub.GetEntity(self._uuid))
+            if newstate["value"] == True:
+                self.state = "on"
+            elif newstate["value"] == False:
+                self.state = "off"
+        except:
+            _LOGGER.warning(f"Unable to update {self._attr_name}")
 
     @property
     def device_info(self):
