@@ -1,6 +1,5 @@
 from __future__ import annotations
 import logging
-import json
 import voluptuous as vol
 
 from homeassistant.components.switch import SwitchEntity
@@ -10,13 +9,12 @@ from datetime import timedelta
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-
-SCAN_INTERVAL = timedelta(seconds=5)
+SCAN_INTERVAL = timedelta(seconds=4)
 
 def setup_platform(hass: HomeAssistant, config, add_entities: AddEntitiesCallback) -> None:
 
     hub = hass.data[DOMAIN]["hub"]
-    outputs = json.loads(hub.GetAllEntities())
+    outputs = hub.get_all_entities()
 
     others = []
 
@@ -34,37 +32,26 @@ class CompareItSwitch(SwitchEntity):
         self._attr_name = switch["name"]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
         self._state = None
-        self.state = "on" if switch["value"] == True else "off"
+        self._state = "on" if switch["value"] == True else "off"
         self.hub = hub
 
     @property
     def state(self) -> str: 
         return self._state
 
-    @state.setter
-    def state(self, value):
-        self._state = value
-
     @property
     def is_on(self) -> bool:
-        return self._state == "on"
+        return True if self._state == "on" else False
 
     def turn_on(self):
-        self.hub.SetEntity(self._uuid, True)
+        self.hub.set_entity(self._uuid, True)
 
     def turn_off(self):
-        self.hub.SetEntity(self._uuid, False)
+        self.hub.set_entity(self._uuid, False)
 
     def update(self):
-        try:
-            newstate = json.loads(self.hub.GetEntity(self._uuid))
-            if newstate["value"] == True:
-                self.state = "on"
-            elif newstate["value"] == False:
-                self.state = "off"
-        except:
-            _LOGGER.warning(f"Unable to update {self._attr_name}")
-
-    @property
-    def device_info(self):
-        return {"identifiers": {(DOMAIN, self._hub.hub_id)}}
+        newstate = self.hub.get_entity(self._uuid)
+        if newstate["value"]:
+            self._state = "on"
+        else:
+            self._state = "off"
