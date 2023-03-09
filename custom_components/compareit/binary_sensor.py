@@ -49,7 +49,7 @@ async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
 class CompareItBinarySensor(BinarySensorEntity):  
     def __init__(self, switch, hub) -> None:
         """Initialize a Compareit Binary sensor."""
-
+        _LOGGER.info(f"setting up {switch['name']} sensor.")
         self._switch = switch
         self._uuid = switch["uuid"]
         self._attr_name = switch["name"]
@@ -90,18 +90,14 @@ class CompareItBinarySensor(BinarySensorEntity):
 class CompareItHomeAwayBinarySensor(BinarySensorEntity):  
     def __init__(self, switch, hub) -> None:
         """Initialize a Compareit Binary sensor with dual uuids."""
-
+        _LOGGER.info("setting up Home away sensor.")
         self._switch = switch
         self._attr_name = "Hemma/Borta"
-        self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
         self._uuid_home = switch["home_uuid"]
         self._uuid_away = switch["away_uuid"]
+        self._attr_unique_id = f"{DOMAIN}_{self._uuid_home}-{self._uuid_away}"
         self._state = "on" if switch["init_value"] == True else "off"
         self.hub = hub
-
-    @property
-    def unique_id(self):
-        return f"compareit_homeaway"
 
     @property
     def name(self) -> str:
