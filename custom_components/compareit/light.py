@@ -1,10 +1,9 @@
 from __future__ import annotations
 import logging
 from typing import Any
-
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.light import (ATTR_BRIGHTNESS, LightEntity)
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from datetime import timedelta
 
 from .const import DOMAIN
@@ -13,7 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=4)
 
 
-async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_entities):
     hub = hass.data[DOMAIN]["hub"]
     outputs = await hub.get_all_entities()
 
@@ -58,7 +57,7 @@ class CompareItStaticLight(LightEntity):
     @property
     def device_info(self):
         return {
-            "identifiers":  1337,
+            "identifiers":  {(DOMAIN, 1337)},
             "name":         "HomeLine",
             "sw_version":   1,
             "model":        2,
@@ -110,7 +109,7 @@ class CompareItDimmableLight(LightEntity):
     @property
     def device_info(self):
         return {
-            "identifiers":  1337,
+            "identifiers":  {(DOMAIN, 1337)},
             "name":         "HomeLine",
             "sw_version":   1,
             "model":        2,

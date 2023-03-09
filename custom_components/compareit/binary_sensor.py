@@ -79,7 +79,7 @@ class CompareItBinarySensor(BinarySensorEntity):
     @property
     def device_info(self):
         return {
-            "identifiers":  1337,
+            "identifiers":  {(DOMAIN, 1337)},
             "name":         "HomeLine",
             "sw_version":   1,
             "model":        2,
@@ -126,7 +126,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
     @property
     def device_info(self):
         return {
-            "identifiers":  1337,
+            "identifiers":  {(DOMAIN, 1337)},
             "name":         "HomeLine",
             "sw_version":   1,
             "model":        2,
