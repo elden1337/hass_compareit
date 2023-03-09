@@ -18,12 +18,9 @@ BINARYSENSOR_TYPE = {
   "Inbrottslarm": "safety"
 }
 
-def setup_platform(
-   hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
-) -> None:
-
+async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
     hub = hass.data[DOMAIN]["hub"]
-    result = hub.get_all_entities()
+    result = await hub.get_all_entities()
     
     homeaway = {
     "home_uuid": '',
@@ -45,8 +42,8 @@ def setup_platform(
     homeaways = []
     homeaways.append(homeaway)
 
-    add_entities(CompareItHomeAwayBinarySensor(entity, hub) for entity in homeaways)
-    add_entities(CompareItBinarySensor(entity, hub) for entity in entities)
+    async_add_entities(CompareItHomeAwayBinarySensor(entity, hub) for entity in homeaways)
+    async_add_entities(CompareItBinarySensor(entity, hub) for entity in entities)
 
 
 class CompareItBinarySensor(BinarySensorEntity):  
@@ -79,6 +76,16 @@ class CompareItBinarySensor(BinarySensorEntity):
         elif newstate["value"]:
             self._state = "off"
 
+    @property
+    def device_info(self):
+        return {
+            "identifiers":  1337,
+            "name":         "HomeLine",
+            "sw_version":   1,
+            "model":        2,
+            "manufacturer": "Peaq systems",
+        }
+
 
 class CompareItHomeAwayBinarySensor(BinarySensorEntity):  
     def __init__(self, switch, hub) -> None:
@@ -86,6 +93,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
 
         self._switch = switch
         self._attr_name = "Hemma/Borta"
+        self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
         self._uuid_home = switch["home_uuid"]
         self._uuid_away = switch["away_uuid"]
         self._state = "on" if switch["init_value"] == True else "off"
@@ -114,3 +122,13 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
             self._state = "on"
         elif awaystate["value"]:
             self._state = "off"
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers":  1337,
+            "name":         "HomeLine",
+            "sw_version":   1,
+            "model":        2,
+            "manufacturer": "Peaq systems",
+        }

@@ -12,10 +12,10 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=4)
 
-def setup_platform(hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None) -> None:
 
+async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
     hub = hass.data[DOMAIN]["hub"]
-    outputs = hub.get_all_entities()
+    outputs = await hub.get_all_entities()
 
     staticlights = []
     dimmablelights = []
@@ -27,8 +27,8 @@ def setup_platform(hass: HomeAssistant, config, add_entities: AddEntitiesCallbac
             elif light["type"] == 2:
                 dimmablelights.append(light)
 
-    add_entities(CompareItStaticLight(staticlight, hub) for staticlight in staticlights)
-    add_entities(CompareItDimmableLight(dimmablelight, hub) for dimmablelight in dimmablelights)
+    async_add_entities(CompareItStaticLight(staticlight, hub) for staticlight in staticlights)
+    async_add_entities(CompareItDimmableLight(dimmablelight, hub) for dimmablelight in dimmablelights)
 
 class CompareItStaticLight(LightEntity):
     def __init__(self, light, hub) -> None:
@@ -54,6 +54,16 @@ class CompareItStaticLight(LightEntity):
     def update(self) -> None:
         newstate = self.hub.get_entity(self._uuid)
         self._state = "on" if newstate.get("value") else "off"
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers":  1337,
+            "name":         "HomeLine",
+            "sw_version":   1,
+            "model":        2,
+            "manufacturer": "Peaq systems",
+        }
 
 
 class CompareItDimmableLight(LightEntity):  
@@ -96,3 +106,13 @@ class CompareItDimmableLight(LightEntity):
         elif newstate["value"] == 0:
             self._state = "off"
         self._brightness =  round(newstate["value"] * 2.55)
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers":  1337,
+            "name":         "HomeLine",
+            "sw_version":   1,
+            "model":        2,
+            "manufacturer": "Peaq systems",
+        }

@@ -13,7 +13,7 @@ from .const import (
     PLATFORMS,
     )
 
-async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:   
+async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
     """Set up Compare It"""
 
     hass.data.setdefault(DOMAIN, {})
@@ -21,7 +21,7 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
     
     username = config.data["username"]
     password = config.data["password"]
-    hass.data[DOMAIN]["hub"] = Hub(username, password)
+    hass.data[DOMAIN]["hub"] = Hub(hass, username, password)
     
     for domain in PLATFORMS:
         hass.async_create_task(
