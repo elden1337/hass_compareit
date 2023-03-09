@@ -1,9 +1,8 @@
 """The Compare IT integration."""
 from __future__ import annotations
 from datetime import timedelta
-from Compare_It import CompareIt
 import voluptuous as vol
-
+from custom_components.compareit.hub import Hub
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
@@ -22,9 +21,7 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
     
     username = config.data["username"]
     password = config.data["password"]
-    hub = CompareIt(username, password)
-
-    hass.data[DOMAIN]["hub"] = hub
+    hass.data[DOMAIN]["hub"] = Hub(username, password)
     
     for domain in PLATFORMS:
         hass.async_create_task(

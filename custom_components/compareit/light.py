@@ -1,6 +1,5 @@
 from __future__ import annotations
 import logging
-import json
 from typing import Any
 
 from homeassistant.components.light import (ATTR_BRIGHTNESS, LightEntity)
@@ -11,13 +10,12 @@ from datetime import timedelta
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+SCAN_INTERVAL = timedelta(seconds=4)
 
-def setup_platform(
-   hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None
-) -> None:
+def setup_platform(hass: HomeAssistant, config, add_entities: AddEntitiesCallback, discovery_info=None) -> None:
 
     hub = hass.data[DOMAIN]["hub"]
-    outputs = json.loads(hub.GetAllEntities())
+    outputs = hub.get_all_entities()
 
     staticlights = []
     dimmablelights = []
@@ -38,28 +36,25 @@ class CompareItStaticLight(LightEntity):
         self._uuid = light["uuid"]
         self._attr_name = light["name"]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
-
-        self._state = "on" if light["value"] == True else "off"
+        self._state = None
         self.hub = hub
 
     @property
-    def is_on(self) -> bool | None:
+    def is_on(self) -> bool:
         return True if self._state == "on" else False
 
     def turn_on(self) -> None:
-        self.hub.SetEntity(self._uuid, True)
-        self.update()
+        self.hub.set_entity(self._uuid, True)
+        self._state = "on"
 
     def turn_off(self) -> None:
-        self.hub.SetEntity(self._uuid, False)
-        self.update()
+        self.hub.set_entity(self._uuid, False)
+        self._state = "off"
 
     def update(self) -> None:
-        newstate = json.loads(self.hub.GetEntity(self._uuid))
-        if newstate["value"] == True:
-            self._state = "on"
-        elif newstate["value"] == False:
-            self._state = "off"
+        newstate = self.hub.get_entity(self._uuid)
+        self._state = "on" if newstate.get("value") else "off"
+
 
 class CompareItDimmableLight(LightEntity):  
     def __init__(self, light, hub) -> None:
@@ -68,9 +63,8 @@ class CompareItDimmableLight(LightEntity):
         self._uuid = light["uuid"]
         self._attr_name = light["name"]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
-
-        self._state = "on" if light["value"] > 0 else "off"
-        self._brightness = round(light["value"] * 2.55) if light["value"] > 0 else 0
+        self._state = None
+        self._brightness = None
         self.hub = hub
 
     @property
@@ -87,19 +81,18 @@ class CompareItDimmableLight(LightEntity):
 
     def turn_on(self, **kwargs: Any) -> None:
         self._brightness = kwargs.get(ATTR_BRIGHTNESS, 255)
-        self.hub.SetEntity(self._uuid, round(self._brightness/2.55))
-        self.update()
+        self.hub.set_entity(self._uuid, round(self._brightness/2.55))
+        self._state = "on"
 
     def turn_off(self) -> None:
-        self.hub.SetEntity(self._uuid, 0)
+        self.hub.set_entity(self._uuid, 0)
         self._brightness = 0
-        self.update()
+        self._state = "off"
 
     def update(self) -> None:
-        newstate = json.loads(self.hub.GetEntity(self._uuid))
+        newstate = self.hub.get_entity(self._uuid)
         if newstate["value"] > 0:
             self._state = "on"
         elif newstate["value"] == 0:
             self._state = "off"
-
         self._brightness =  round(newstate["value"] * 2.55)

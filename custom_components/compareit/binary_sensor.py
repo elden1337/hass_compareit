@@ -1,6 +1,5 @@
 from __future__ import annotations
 import logging
-import json
 import voluptuous as vol
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
@@ -10,6 +9,7 @@ from datetime import timedelta
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+SCAN_INTERVAL = timedelta(seconds=4)
 
 BINARYSENSOR_TYPE = {
   "Hemma/Borta": "presence",
@@ -23,7 +23,7 @@ def setup_platform(
 ) -> None:
 
     hub = hass.data[DOMAIN]["hub"]
-    result = json.loads(hub.GetAllEntities())
+    result = hub.get_all_entities()
     
     homeaway = {
     "home_uuid": '',
@@ -65,7 +65,7 @@ class CompareItBinarySensor(BinarySensorEntity):
         return self._attr_name
 
     @property
-    def is_on(self) -> bool | None:
+    def is_on(self) -> bool:
         return True if self._state == "on" else False
 
     @property
@@ -73,10 +73,10 @@ class CompareItBinarySensor(BinarySensorEntity):
         return BINARYSENSOR_TYPE[self.name]
 
     def update(self) -> None:
-        newstate = json.loads(self.hub.GetEntity(self._uuid))
-        if newstate["value"] == True:
+        newstate = self.hub.get_entity(self._uuid)
+        if newstate["value"]:
             self._state = "on"
-        elif newstate["value"] == False:
+        elif newstate["value"]:
             self._state = "off"
 
 
@@ -100,7 +100,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
         return self._attr_name
 
     @property
-    def is_on(self) -> bool | None:
+    def is_on(self) -> bool:
         return True if self._state == "on" else False
 
     @property
@@ -108,9 +108,9 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
         return BINARYSENSOR_TYPE[self._attr_name]
 
     def update(self) -> None:
-        homestate = json.loads(self.hub.GetEntity(self._uuid_home))
-        awaystate = json.loads(self.hub.GetEntity(self._uuid_away))
-        if homestate["value"] == True:
+        homestate = self.hub.get_entity(self._uuid_home)
+        awaystate = self.hub.get_entity(self._uuid_away)
+        if homestate["value"]:
             self._state = "on"
-        elif awaystate["value"] == True:
+        elif awaystate["value"]:
             self._state = "off"
