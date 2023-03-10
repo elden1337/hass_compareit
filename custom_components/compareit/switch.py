@@ -13,11 +13,11 @@ SCAN_INTERVAL = timedelta(seconds=4)
 async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
 
     hub = hass.data[DOMAIN]["hub"]
-    outputs = hub.entities
+    result = await hub.get_all_entities_async()
 
     others = []
 
-    for switch in outputs["outputs"]:
+    for switch in result["outputs"]:
         if switch["name"].startswith("Styrda") or switch["name"].startswith("Vattenav"):
             others.append(switch)
     _LOGGER.info("compareit setting up switches")

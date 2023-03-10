@@ -14,12 +14,12 @@ SCAN_INTERVAL = timedelta(seconds=4)
 
 async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_entities):
     hub = hass.data[DOMAIN]["hub"]
-    outputs = hub.entities
+    result = await hub.get_all_entities_async()
 
     staticlights = []
     dimmablelights = []
 
-    for light in outputs["outputs"]:
+    for light in result["outputs"]:
         if light["name"].startswith("Belysning") or light["name"].startswith("Ytter"):
             if light["type"] == 1:
                 staticlights.append(light)

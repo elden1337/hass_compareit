@@ -8,11 +8,16 @@ class Hub:
     def __init__(self, hass, username, password):
         self._hass = hass
         self._compare_it = CompareIt(username, password)
-        self._all_entities = self.get_all_entities()
+        # self._all_entities = None
+        # await self.get_all_entities_async()
 
-    @property
-    def entities(self) -> dict:
-        return self._all_entities
+    # @property
+    # def entities(self) -> dict:
+    #     return self._all_entities
+    #
+    # @entities.setter
+    # def entities(self, val) -> None:
+    #     self._all_entities = val
 
     def get_entity(self, uuid):
         ret = self._compare_it.GetEntity(uuid)
