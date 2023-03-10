@@ -20,7 +20,7 @@ BINARYSENSOR_TYPE = {
 
 async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
     hub = hass.data[DOMAIN]["hub"]
-    result = await hub.get_all_entities()
+    result = hub.entities
     
     homeaway = {
     "home_uuid": '',
