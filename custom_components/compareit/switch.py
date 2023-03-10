@@ -13,7 +13,7 @@ SCAN_INTERVAL = timedelta(seconds=4)
 async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
 
     hub = hass.data[DOMAIN]["hub"]
-    outputs = await hub.get_all_entities()
+    outputs = hub.entities
 
     others = []
 
