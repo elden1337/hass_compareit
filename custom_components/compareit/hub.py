@@ -8,7 +8,7 @@ class Hub:
     def __init__(self, hass, username, password):
         self._hass = hass
         self._compare_it = CompareIt(username, password)
-        self._all_entities = get_all_entities()
+        self._all_entities = self.get_all_entities()
 
     @property
     def entities(self) -> dict:
