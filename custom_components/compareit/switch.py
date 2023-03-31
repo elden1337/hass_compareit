@@ -8,7 +8,7 @@ from datetime import timedelta
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=4)
+SCAN_INTERVAL = timedelta(seconds=6)
 
 async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
 

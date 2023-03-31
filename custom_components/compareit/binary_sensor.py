@@ -9,7 +9,7 @@ from datetime import timedelta
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-SCAN_INTERVAL = timedelta(seconds=4)
+SCAN_INTERVAL = timedelta(seconds=20)
 
 BINARYSENSOR_TYPE = {
   "Hemma/Borta": "presence",

@@ -22,7 +22,9 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry) -> bool:
     password = config.data["password"]
     hass.data[DOMAIN]["hub"] = Hub(hass, username, password)
 
-    hass.config_entries.async_setup_platforms(config, PLATFORMS)
+    for platform in PLATFORMS:
+        hass.async_create_task(hass.config_entries.async_forward_entry_setup(config, platform))
+
     return True
 
 async def unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
