@@ -14,7 +14,7 @@ SCAN_INTERVAL = timedelta(seconds=4)
 
 async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_entities):
     hub = hass.data[DOMAIN]["hub"]
-    result = await hub.get_all_entities_async()
+    result = await hub.async_get_all_entities()
 
     staticlights = []
     dimmablelights = []
@@ -42,16 +42,16 @@ class CompareItStaticLight(LightEntity):
     def is_on(self) -> bool:
         return True if self._state == "on" else False
 
-    def turn_on(self) -> None:
-        self.hub.set_entity(self._uuid, True)
+    async def async_turn_on(self) -> None:
+        await self.hub.async_set_entity(self._uuid, True)
         self._state = "on"
 
-    def turn_off(self) -> None:
-        self.hub.set_entity(self._uuid, False)
+    async def async_turn_off(self) -> None:
+        await self.hub.async_set_entity(self._uuid, False)
         self._state = "off"
 
-    def update(self) -> None:
-        newstate = self.hub.get_entity(self._uuid)
+    async def async_update(self) -> None:
+        newstate = await self.hub.async_get_entity(self._uuid)
         self._state = "on" if newstate.get("value") else "off"
 
     @property
@@ -88,18 +88,18 @@ class CompareItDimmableLight(LightEntity):
     def supported_features(self):
         return 1 #brightness
 
-    def turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:
         self._brightness = kwargs.get(ATTR_BRIGHTNESS, 255)
-        self.hub.set_entity(self._uuid, round(self._brightness/2.55))
+        await self.hub.async_set_entity(self._uuid, round(self._brightness/2.55))
         self._state = "on"
 
-    def turn_off(self) -> None:
-        self.hub.set_entity(self._uuid, 0)
+    async def turn_off(self) -> None:
+        await self.hub.async_set_entity(self._uuid, 0)
         self._brightness = 0
         self._state = "off"
 
-    def update(self) -> None:
-        newstate = self.hub.get_entity(self._uuid)
+    async def async_update(self) -> None:
+        newstate = await self.hub.async_get_entity(self._uuid)
         if newstate["value"] > 0:
             self._state = "on"
         elif newstate["value"] == 0:

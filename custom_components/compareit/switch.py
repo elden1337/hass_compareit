@@ -13,7 +13,7 @@ SCAN_INTERVAL = timedelta(seconds=6)
 async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
 
     hub = hass.data[DOMAIN]["hub"]
-    result = await hub.get_all_entities_async()
+    result = await hub.async_get_all_entities()
 
     others = []
 
@@ -42,14 +42,14 @@ class CompareItSwitch(SwitchEntity):
     def is_on(self) -> bool:
         return True if self._state == "on" else False
 
-    def turn_on(self):
-        self.hub.set_entity(self._uuid, True)
+    async def async_turn_on(self):
+        await self.hub.async_set_entity(self._uuid, True)
 
-    def turn_off(self):
-        self.hub.set_entity(self._uuid, False)
+    async def async_turn_off(self):
+        await self.hub.async_set_entity(self._uuid, False)
 
-    def update(self):
-        newstate = self.hub.get_entity(self._uuid)
+    async def async_update(self):
+        newstate = await self.hub.async_get_entity(self._uuid)
         if newstate["value"]:
             self._state = "on"
         else:

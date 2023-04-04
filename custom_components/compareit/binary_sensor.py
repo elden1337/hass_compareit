@@ -20,7 +20,7 @@ BINARYSENSOR_TYPE = {
 
 async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
     hub = hass.data[DOMAIN]["hub"]
-    result = await hub.get_all_entities_async()
+    result = await hub.async_get_all_entities()
     
     homeaway = {
     "home_uuid": '',
@@ -69,8 +69,8 @@ class CompareItBinarySensor(BinarySensorEntity):
     def device_class(self):
         return BINARYSENSOR_TYPE[self.name]
 
-    def update(self) -> None:
-        newstate = self.hub.get_entity(self._uuid)
+    async def async_update(self) -> None:
+        newstate = await self.hub.async_get_entity(self._uuid)
         if newstate["value"]:
             self._state = "on"
         elif newstate["value"]:
@@ -111,9 +111,9 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
     def device_class(self):
         return BINARYSENSOR_TYPE[self._attr_name]
 
-    def update(self) -> None:
-        homestate = self.hub.get_entity(self._uuid_home)
-        awaystate = self.hub.get_entity(self._uuid_away)
+    async def async_update(self) -> None:
+        homestate = await self.hub.async_get_entity(self._uuid_home)
+        awaystate = await self.hub.async_get_entity(self._uuid_away)
         if homestate["value"]:
             self._state = "on"
         elif awaystate["value"]:
