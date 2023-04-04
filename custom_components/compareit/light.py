@@ -44,11 +44,11 @@ class CompareItStaticLight(LightEntity):
 
     async def async_turn_on(self) -> None:
         await self.hub.async_set_entity(self._uuid, True)
-        self._state = "on"
+        await self.async_update()
 
     async def async_turn_off(self) -> None:
         await self.hub.async_set_entity(self._uuid, False)
-        self._state = "off"
+        await self.async_update()
 
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
@@ -91,12 +91,11 @@ class CompareItDimmableLight(LightEntity):
     async def async_turn_on(self, **kwargs: Any) -> None:
         self._brightness = kwargs.get(ATTR_BRIGHTNESS, 255)
         await self.hub.async_set_entity(self._uuid, round(self._brightness/2.55))
-        self._state = "on"
+        await self.async_update()
 
     async def turn_off(self) -> None:
         await self.hub.async_set_entity(self._uuid, 0)
-        self._brightness = 0
-        self._state = "off"
+        await self.async_update()
 
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
