@@ -99,11 +99,14 @@ class CompareItDimmableLight(LightEntity):
 
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
-        if newstate["value"] > 0:
-            self._state = "on"
-        elif newstate["value"] == 0:
-            self._state = "off"
-        self._brightness =  round(newstate["value"] * 2.55)
+        try:
+            if newstate["value"] > 0:
+                self._state = "on"
+            elif newstate["value"] == 0:
+                self._state = "off"
+            self._brightness =  round(newstate["value"] * 2.55)
+        except Exception as e:
+            _LOGGER.error(f"Error in async update dimmable light: {e}. state: {newstate}")
 
     @property
     def device_info(self):

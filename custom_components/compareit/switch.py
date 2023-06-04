@@ -50,10 +50,8 @@ class CompareItSwitch(SwitchEntity):
 
     async def async_update(self):
         newstate = await self.hub.async_get_entity(self._uuid)
-        if newstate["value"]:
-            self._state = "on"
-        else:
-            self._state = "off"
+        self._state = newstate.get("value", False)
+
 
     @property
     def device_info(self):
