@@ -93,7 +93,7 @@ class CompareItDimmableLight(LightEntity):
         await self.hub.async_set_entity(self._uuid, round(self._brightness/2.55))
         await self.async_update()
 
-    async def turn_off(self) -> None:
+    async def async_turn_off(self) -> None:
         await self.hub.async_set_entity(self._uuid, 0)
         await self.async_update()
 
