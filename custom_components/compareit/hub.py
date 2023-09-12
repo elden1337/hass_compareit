@@ -10,17 +10,21 @@ class Hub:
         self.api = CompareIt(username, password)
 
     async def async_get_entity(self, uuid):
-        ret = await self.api.async_get_entity(uuid)
-        if ret:
-            return ret
-        _LOGGER.error(f"Unable to get entity {uuid}.")
+        try:
+            ret = await self.api.async_get_entity(uuid)
+            if ret:
+                return ret
+        except Exception as e:
+            _LOGGER.error(f"Unable to get entity {uuid}. Exception: {e}")
 
     async def async_set_entity(self, uuid, val) -> None:
         await self.api.async_set_entity(uuid, val)
 
     async def async_get_all_entities(self):
-        ret = await self.api.async_get_all_entities()
-        if ret:
-            return ret
-        _LOGGER.error("Unable to get all entities_async.")
+        try:
+            ret = await self.api.async_get_all_entities()
+            if ret:
+                return ret
+        except Exception as e:
+            _LOGGER.error(f"Unable to get all entities. Exception: {e}")
 

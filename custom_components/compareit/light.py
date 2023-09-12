@@ -6,7 +6,7 @@ from homeassistant.components.light import (ATTR_BRIGHTNESS, LightEntity)
 from homeassistant.core import HomeAssistant
 from datetime import timedelta
 
-from .const import DOMAIN
+from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(seconds=4)
@@ -19,11 +19,11 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_
     staticlights = []
     dimmablelights = []
 
-    for light in result["outputs"]:
-        if light["name"].startswith("Belysning") or light["name"].startswith("Ytter"):
-            if light["type"] == 1:
+    for light in result.get("outputs", []):
+        if light[NAME].startswith("Belysning") or light[NAME].startswith("Ytter"):
+            if light[TYPESTR] == 1:
                 staticlights.append(light)
-            elif light["type"] == 2:
+            elif light[TYPESTR] == 2:
                 dimmablelights.append(light)
 
     async_add_entities(CompareItStaticLight(staticlight, hub) for staticlight in staticlights)
@@ -32,15 +32,15 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_
 class CompareItStaticLight(LightEntity):
     def __init__(self, light, hub) -> None:
         """Initialize a static CompareitLight."""    
-        self._uuid = light["uuid"]
-        self._attr_name = light["name"]
+        self._uuid = light[UUID]
+        self._attr_name = light[NAME]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
         self._state = None
         self.hub = hub
 
     @property
     def is_on(self) -> bool:
-        return True if self._state == "on" else False
+        return True if self._state == ON else False
 
     async def async_turn_on(self) -> None:
         await self.hub.async_set_entity(self._uuid, True)
@@ -52,13 +52,13 @@ class CompareItStaticLight(LightEntity):
 
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
-        self._state = "on" if newstate.get("value") else "off"
+        self._state = ON if newstate.get(VALUE) else OFF
 
     @property
     def device_info(self):
         return {
             "identifiers":  {(DOMAIN, 1337)},
-            "name":         "HomeLine",
+            NAME:         "HomeLine",
             "sw_version":   1,
             "model":        2,
             "manufacturer": "Peaq systems",
@@ -69,8 +69,8 @@ class CompareItDimmableLight(LightEntity):
     def __init__(self, light, hub) -> None:
         """Initialize a dimmable CompareitLight."""
         self._light = light
-        self._uuid = light["uuid"]
-        self._attr_name = light["name"]
+        self._uuid = light[UUID]
+        self._attr_name = light[NAME]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
         self._state = None
         self._brightness = None
@@ -82,7 +82,7 @@ class CompareItDimmableLight(LightEntity):
 
     @property
     def is_on(self) -> bool | None:
-        return True if self._state == "on" else False
+        return True if self._state == ON else False
 
     @property
     def supported_features(self):
@@ -100,11 +100,11 @@ class CompareItDimmableLight(LightEntity):
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
         try:
-            if newstate["value"] > 0:
-                self._state = "on"
-            elif newstate["value"] == 0:
-                self._state = "off"
-            self._brightness =  round(newstate["value"] * 2.55)
+            if newstate[VALUE] > 0:
+                self._state = ON
+            elif newstate[VALUE] == 0:
+                self._state = OFF
+            self._brightness =  round(newstate[VALUE] * 2.55)
         except Exception as e:
             _LOGGER.error(f"Error in async update dimmable light: {e}. state: {newstate}")
 
@@ -112,7 +112,7 @@ class CompareItDimmableLight(LightEntity):
     def device_info(self):
         return {
             "identifiers":  {(DOMAIN, 1337)},
-            "name":         "HomeLine",
+            NAME:         "HomeLine",
             "sw_version":   1,
             "model":        2,
             "manufacturer": "Peaq systems",
