@@ -18,10 +18,10 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_
 
     staticlights = []
     dimmablelights = []
-
     for light in result.get("outputs", []):
         if light[NAME].startswith("Belysning") or light[NAME].startswith("Ytter"):
             if light[TYPESTR] == 1:
+
                 staticlights.append(light)
             elif light[TYPESTR] == 2:
                 dimmablelights.append(light)

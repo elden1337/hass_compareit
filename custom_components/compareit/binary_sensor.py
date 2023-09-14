@@ -1,6 +1,10 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import logging
 import voluptuous as vol
+if TYPE_CHECKING:
+    from custom_components.compareit.hub import Hub
+
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.core import HomeAssistant
@@ -48,7 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
 
 
 class CompareItBinarySensor(BinarySensorEntity):  
-    def __init__(self, switch, hub) -> None:
+    def __init__(self, switch, hub: Hub) -> None:
         """Initialize a Compareit Binary sensor."""
         _LOGGER.debug(f"setting up {switch[NAME]} sensor.")
         self._switch = switch
@@ -56,7 +60,7 @@ class CompareItBinarySensor(BinarySensorEntity):
         self._attr_name = switch[NAME]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid}"
         self._state = ON if switch[VALUE] == True else OFF
-        self.hub = hub
+        self.hub: Hub = hub
 
     @property
     def name(self) -> str:
@@ -72,8 +76,9 @@ class CompareItBinarySensor(BinarySensorEntity):
 
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
-        new_val = newstate.get(VALUE, False)
-        self._state = ON if new_val else OFF
+        if new_val is not None:
+            new_val = newstate.get(VALUE, False)
+            self._state = ON if new_val else OFF
 
     @property
     def device_info(self):
@@ -87,7 +92,7 @@ class CompareItBinarySensor(BinarySensorEntity):
 
 
 class CompareItHomeAwayBinarySensor(BinarySensorEntity):  
-    def __init__(self, switch, hub) -> None:
+    def __init__(self, switch, hub: Hub) -> None:
         """Initialize a Compareit Binary sensor with dual uuids."""
         _LOGGER.debug("setting up Home away sensor.")
         self._switch = switch
@@ -96,7 +101,7 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
         self._uuid_away = switch["away_uuid"]
         self._attr_unique_id = f"{DOMAIN}_{self._uuid_home}-{self._uuid_away}"
         self._state = ON if switch["init_value"] == True else OFF
-        self.hub = hub
+        self.hub: Hub = hub
 
     @property
     def name(self) -> str:

@@ -9,13 +9,14 @@ class Hub:
         self._hass = hass
         self.api = CompareIt(username, password)
 
-    async def async_get_entity(self, uuid):
+    async def async_get_entity(self, uuid) -> dict:
         try:
             ret = await self.api.async_get_entity(uuid)
             if ret:
-                return ret
+                return ret or {}
         except Exception as e:
             _LOGGER.error(f"Unable to get entity {uuid}. Exception: {e}")
+            return {}
 
     async def async_set_entity(self, uuid, val) -> None:
         await self.api.async_set_entity(uuid, val)
