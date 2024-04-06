@@ -18,7 +18,7 @@ async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
     others = []
 
     for switch in result.get("outputs", []):
-        if switch[NAME].startswith("Styrda") or switch[NAME].startswith("Vattenav"):
+        if switch.get(NAME, "").startswith("Styrda") or switch.get(NAME, "").startswith("Vattenav"):
             others.append(switch)
     _LOGGER.info("compareit setting up switches")
     async_add_entities(CompareItSwitch(o, hub) for o in others)

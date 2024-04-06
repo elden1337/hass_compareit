@@ -36,12 +36,13 @@ async def async_setup_entry(hass: HomeAssistant, config, async_add_entities):
     entities = []
 
     for switch in result.get("inputs", []):
-        if switch.get(NAME, "").endswith("HOME"):
+        name = switch.get(NAME, "")
+        if name.endswith("HOME"):
             homeaway["home_uuid"] = switch[UUID]
             homeaway["init_value"] = switch[VALUE]
-        elif switch[NAME].endswith("AWAY"):
+        elif name.endswith("AWAY"):
             homeaway["away_uuid"] = switch[UUID] 
-        elif switch[NAME] == "Brandlarm" or switch[NAME] == "Inbrottslarm" or switch[NAME] == "Vattenläckagedetektor":
+        elif name == "Brandlarm" or name == "Inbrottslarm" or name == "Vattenläckagedetektor":
             entities.append(switch)           
 
     homeaways = []
@@ -76,7 +77,7 @@ class CompareItBinarySensor(BinarySensorEntity):
 
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
-        if new_val is not None:
+        if newstate is not None:
             new_val = newstate.get(VALUE, False)
             self._state = ON if new_val else OFF
 
@@ -118,10 +119,12 @@ class CompareItHomeAwayBinarySensor(BinarySensorEntity):
     async def async_update(self) -> None:
         homestate = await self.hub.async_get_entity(self._uuid_home)
         awaystate = await self.hub.async_get_entity(self._uuid_away)
-        if homestate[VALUE]:
+        if homestate.get(VALUE, False):
             self._state = ON
-        elif awaystate[VALUE]:
+        elif awaystate.get(VALUE, False):
             self._state = OFF
+        if not any([homestate.get(VALUE, False), awaystate.get(VALUE, False)]):
+            _LOGGER.error("Both home and away are off. This should not happen.")
 
     @property
     def device_info(self):

@@ -19,11 +19,11 @@ async def async_setup_entry(hass: HomeAssistant, config: ConfigEntry, async_add_
     staticlights = []
     dimmablelights = []
     for light in result.get("outputs", []):
-        if light[NAME].startswith("Belysning") or light[NAME].startswith("Ytter"):
-            if light[TYPESTR] == 1:
-
+        if light.get(NAME, "").startswith("Belysning") or light.get(NAME,"").startswith("Ytter"):
+            typestr = light.get(TYPESTR, 0)
+            if typestr == 1:
                 staticlights.append(light)
-            elif light[TYPESTR] == 2:
+            elif typestr == 2:
                 dimmablelights.append(light)
 
     async_add_entities(CompareItStaticLight(staticlight, hub) for staticlight in staticlights)
@@ -100,11 +100,16 @@ class CompareItDimmableLight(LightEntity):
     async def async_update(self) -> None:
         newstate = await self.hub.async_get_entity(self._uuid)
         try:
-            if newstate[VALUE] > 0:
+            value = newstate.get(VALUE, -1)
+            if value == -1:
+                _LOGGER.error(f"Error in async update dimmable light. state: {newstate}")
+                return
+            if value > 0:
                 self._state = ON
-            elif newstate[VALUE] == 0:
+            elif value == 0:
                 self._state = OFF
-            self._brightness =  round(newstate[VALUE] * 2.55)
+
+            self._brightness =  round(value * 2.55)
         except Exception as e:
             _LOGGER.error(f"Error in async update dimmable light: {e}. state: {newstate}")
 
